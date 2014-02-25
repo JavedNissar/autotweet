@@ -1,24 +1,18 @@
 var twitter=require('twitter');
 var fs=require('fs');
 
-function tokenize(string){
-	tokens=[];
-	for(var i=0;i<string.length;i++){
-		if(string[i]!==" "){
-			var currentTokenIndex;
-			if(tokens.length==0){
-				currentTokenIndex=0;
-			}else{
-				currentTokenIndex=tokens.length-1;
-			}
-			tokens[currentTokenIndex]+=string[i];
-		}
-		else{
-			tokens.push("");
-		}
-	}
-	return tokens;
+function Generator(corpus){
+	this.transitionMatrix={}
+	this.corpus=corpus;
 }
+Generator.prototype={
+
+}
+//tokenize a string by splitting it by the spaces
+function tokenize(string){
+	return string.split(" ");
+}
+//read the settings.json file
 function readSettings(err,fd){
 	if(err){
 		return console.log(err);
@@ -31,9 +25,9 @@ function readSettings(err,fd){
 			access_token_secret:settings.access_token_secret
 		});
 		var corpus=settings.corpus;
-		var probabilityMatrix={};
-		for(var x=0,lenX=corpus.length;x<lenX;x++){
-			console.log(tokenize(corpus[x]));
+		var generator=new Generator(corpus);
+		for(var x=0;x<corpus.length;x++){
+			var sentenceTokens=tokenize(corpus[x]);
 		}
 	};
 }
