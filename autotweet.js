@@ -3,21 +3,21 @@ var fs=require('fs');
 
 function MarkovChainGenerator(corpus){
 	this.transitionMatrix={};
-	this.collection={}
+	collection={}
 	for(var x=0;x<corpus.length;x++){
-		var sentenceTokens=tokenize(corpus[x]);
+		var sentenceTokens=corpus[x].split(" ");
 		for(var y=0;y<sentenceTokens.length;y++){
 			if(y!=sentenceTokens.length-1){
 				token=sentenceTokens[y];
-				if(this.collection[token]===undefined){
-					this.collection[token]=[];
+				if(collection[token]===undefined){
+					collection[token]=[];
 				}
-				this.collection[token].push(sentenceTokens[y+1]);
+				collection[token].push(sentenceTokens[y+1]);
 			}
 		}
 	}
-	for(var token in this.collection){
-		var occurences=this.collection[token];
+	for(var token in collection){
+		var occurences=collection[token];
 		this.transitionMatrix[token]={};
 		for(var i=0;i<occurences.length;i++){
 			occurence=occurences[i];
@@ -28,13 +28,9 @@ function MarkovChainGenerator(corpus){
 			}
 		}
 	}
+
 }
 
-
-//tokenize a string by splitting it by the spaces
-function tokenize(string){
-	return string.split(" ");
-}
 //read the settings.json file
 function readSettings(err,fd){
 	if(err){
