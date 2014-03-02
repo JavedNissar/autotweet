@@ -45,30 +45,41 @@ function MarkovChainGenerator(corpus){
 }
 MarkovChainGenerator.prototype={
 	generateWord:function(token){
-		var possibilities={};
-		for(var possibility in this.transitionMatrix[token]){
-			possibilities[possibility]={"probability":0,"complete":false};
-			possibilities[possibility]["probability"]=Math.round(this.transitionMatrix[token][possibility]*100);
-		}
-		var array=[];
-		currentToken=0;
-		for(var i=0;i<100;i++){
-			var token=(Object.keys(possibilities)[currentToken]);
-			if(i>possibilities[token]["probability"]){
-				currentToken++;
-				token=(Object.keys(possibilities)[currentToken]);
-				array.push(token);
-			}else{
-				array.push(token);
+		if(Object.keys(this.transitionMatrix[token]).length>0){
+			var possibilities={};
+			for(var possibility in this.transitionMatrix[token]){
+				possibilities[possibility]={"probability":0,"complete":false};
+				possibilities[possibility]["probability"]=Math.round(this.transitionMatrix[token][possibility]*100);
 			}
+			var array=[];
+			currentToken=0;
+			for(var i=0;i<100;i++){
+				var token=(Object.keys(possibilities)[currentToken]);
+				console.log(i,"index",token,"token",possibilities[token]["probability"],"probability");
+				if(i>possibilities[token]["probability"]){
+					currentToken++;
+					token=(Object.keys(possibilities)[currentToken]);
+					array.push(token);
+				}else{
+					array.push(token);
+				}
+			}
+			return array[getRandomInt(0,array.length)];
+		}else{
+			return undefined;
 		}
-		return array[getRandomInt(0,array.length)];
 	},
 	generateSentence:function(length){
 		sentence=[Object.keys(this.transitionMatrix)[getRandomInt(0,Object.keys(this.transitionMatrix).length)]];
 		for(var i=1;i<length-1;i++){
-			console.log(sentence[i-1],i);
-			sentence.push(this.generateWord(sentence[i-1]));
+			console.log(sentence[i-1],"word",i,"index");
+			generatedWord=this.generateWord(sentence[i-1]);
+			if(generatedWord===undefined){
+				console.log("reached end of markov chain");
+				return sentence;
+			}else{
+				sentence.push(generatedWord);
+			}
 		}
 		return sentence;
 	}
