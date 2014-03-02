@@ -63,6 +63,14 @@ MarkovChainGenerator.prototype={
 			}
 		}
 		return array[getRandomInt(0,array.length)];
+	},
+	generateSentence:function(length){
+		sentence=[Object.keys(this.transitionMatrix)[getRandomInt(0,Object.keys(this.transitionMatrix).length)]];
+		for(var i=1;i<length-1;i++){
+			console.log(sentence[i-1],i);
+			sentence.push(this.generateWord(sentence[i-1]));
+		}
+		return sentence;
 	}
 }
 //read the settings.json file
@@ -78,7 +86,7 @@ function readSettings(err,fd){
 			access_token_secret:settings.access_token_secret
 		});
 		var generator=new MarkovChainGenerator(settings.corpus);
-		console.log(generator.generateWord("Waldo"),"generated word");
+		console.log(generator.generateSentence(5),"generated word");
 	};
 }
 fs.readFile("./settings.json",'utf8',readSettings);
