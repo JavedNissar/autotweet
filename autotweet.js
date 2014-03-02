@@ -3,6 +3,7 @@ var fs=require('fs');
 
 function MarkovChainGenerator(corpus){
 	this.transitionMatrix={};
+	numbers={};
 	collection={}
 	for(var x=0;x<corpus.length;x++){
 		var sentenceTokens=corpus[x].split(" ");
@@ -18,17 +19,23 @@ function MarkovChainGenerator(corpus){
 	}
 	for(var token in collection){
 		var occurences=collection[token];
-		this.transitionMatrix[token]={};
+		numbers[token]={};
 		for(var i=0;i<occurences.length;i++){
 			occurence=occurences[i];
-			if(this.transitionMatrix[token][occurence]===undefined){
-				this.transitionMatrix[token][occurence]=1;
+			if(numbers[token][occurence]===undefined){
+				numbers[token][occurence]=1;
 			}else{
-				this.transitionMatrix[token][occurence]++;
+				numbers[token][occurence]++;
 			}
 		}
 	}
-
+	for(var token in numbers){
+		this.transitionMatrix[token]={}
+		total=Object.keys(numbers[token]).length;
+		for(var possibility in numbers[token]){
+			this.transitionMatrix[token][possibility]=numbers[token][possibility]/total;
+		}
+	}
 }
 
 //read the settings.json file
