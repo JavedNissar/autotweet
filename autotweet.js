@@ -7,6 +7,8 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+//MARKOV CHAIN CODE
+//Define the init statement
 function MarkovChainGenerator(corpus){
 	this.transitionMatrix={};
 	numbers={};
@@ -43,9 +45,13 @@ function MarkovChainGenerator(corpus){
 		}
 	}
 }
+//Define two functions required
 MarkovChainGenerator.prototype={
+	//generate words
+	//token is a word in the transition matrix
 	generateWord:function(token){
-		if(Object.keys(this.transitionMatrix[token]).length>0){
+		if(token!==undefined){
+			//init object containing all possibilities for this particular state
 			var possibilities={};
 			for(var possibility in this.transitionMatrix[token]){
 				possibilities[possibility]={"probability":0,"complete":false};
@@ -53,15 +59,11 @@ MarkovChainGenerator.prototype={
 			}
 			var array=[];
 			currentToken=0;
-			for(var i=0;i<100;i++){
-				var token=(Object.keys(possibilities)[currentToken]);
-				console.log(i,"index",token,"token",possibilities[token]["probability"],"probability");
-				if(i>possibilities[token]["probability"]){
-					currentToken++;
-					token=(Object.keys(possibilities)[currentToken]);
-					array.push(token);
-				}else{
-					array.push(token);
+			var keys=Object.keys(possibilities);
+			for(var x=0;x<keys.length;x++){
+				var key=keys[x];
+				for(var y=0;y<possibilities[key]["probability"];y++){
+					array.push(key);
 				}
 			}
 			return array[getRandomInt(0,array.length)];
@@ -69,10 +71,10 @@ MarkovChainGenerator.prototype={
 			return undefined;
 		}
 	},
+	//generate entire sentences
 	generateSentence:function(length){
 		sentence=[Object.keys(this.transitionMatrix)[getRandomInt(0,Object.keys(this.transitionMatrix).length)]];
 		for(var i=1;i<length-1;i++){
-			console.log(sentence[i-1],"word",i,"index");
 			generatedWord=this.generateWord(sentence[i-1]);
 			if(generatedWord===undefined){
 				console.log("reached end of markov chain");
