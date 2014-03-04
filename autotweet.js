@@ -1,5 +1,6 @@
 var twitter=require('twitter');
 var fs=require('fs');
+var util=require('util');
 
 // Returns a random integer between min and max
 // Using Math.round() will give you a non-uniform distribution!
@@ -78,12 +79,12 @@ MarkovChainGenerator.prototype={
 			generatedWord=this.generateWord(sentence[i-1]);
 			if(generatedWord===undefined){
 				console.log("reached end of markov chain");
-				return sentence;
+				return sentence.join(" ");
 			}else{
 				sentence.push(generatedWord);
 			}
 		}
-		return sentence;
+		return sentence.join(" ");
 	}
 }
 //read the settings.json file
@@ -99,7 +100,13 @@ function readSettings(err,fd){
 			access_token_secret:settings.access_token_secret
 		});
 		var generator=new MarkovChainGenerator(settings.corpus);
-		console.log(generator.generateSentence(5),"generated word");
+		twit.verifyCredentials(function(data) {
+        	console.log(util.inspect(data));
+    	}).updateStatus(generator.generateSentence(5),
+        	function(data) {
+            	console.log(util.inspect(data));
+        	}
+    	);
 	};
 }
 fs.readFile("./settings.json",'utf8',readSettings);
