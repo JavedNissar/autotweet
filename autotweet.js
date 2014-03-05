@@ -11,33 +11,47 @@ function getRandomInt(min, max) {
 //MARKOV CHAIN CODE
 //Define the init statement
 function MarkovChainGenerator(corpus){
+	//create some variables to hold the data we need
 	this.transitionMatrix={};
 	numbers={};
 	collection={}
+	//first get the number of times every word occurs after every other word, we need this for the probability calculations
 	for(var x=0;x<corpus.length;x++){
+		//split a sentence from the corpus into tokens
 		var sentenceTokens=corpus[x].split(" ");
+		//for every token
 		for(var y=0;y<sentenceTokens.length;y++){
 			if(y!==sentenceTokens.length-1){
 				var token=sentenceTokens[y];
+				/*create a new array if the token isn't already in the collection
+				 This array will store every instance of another token appearing after
+				 this token*/
 				if(collection[token]===undefined){
 					collection[token]=[];
 				}
+				//add whatever word is after that token
 				collection[token].push(sentenceTokens[y+1]);
 			}
 		}
 	}
+	//for every token we found in the first for loop
 	for(var token in collection){
+		//grab the list of tokens after that token
 		var occurences=collection[token];
+		//create an object to hold the number of occurences of every token that occurs after the token
+		//ex. {"a":5,"I":6,"am":7}
 		numbers[token]={};
 		for(var i=0;i<occurences.length;i++){
 			occurence=occurences[i];
 			if(numbers[token][occurence]===undefined){
 				numbers[token][occurence]=1;
 			}else{
+				//increment for every appearance of a token
 				numbers[token][occurence]++;
 			}
 		}
 	}
+	//run the final calculations for the transition matrix
 	for(var token in numbers){
 		this.transitionMatrix[token]={}
 		total=Object.keys(numbers[token]).length;
@@ -51,6 +65,7 @@ MarkovChainGenerator.prototype={
 	//generate words
 	//token is a word in the transition matrix
 	generateWord:function(token){
+		//prevent undefined from being entered
 		if(token!==undefined){
 			//init object containing all possibilities for this particular state
 			var possibilities={};
@@ -101,10 +116,10 @@ function readSettings(err,fd){
 		});
 		var generator=new MarkovChainGenerator(settings.corpus);
 		twit.verifyCredentials(function(data) {
-        	console.log(util.inspect(data));
+        	console.log("credentials verified");
     	}).updateStatus(generator.generateSentence(5),
         	function(data) {
-            	console.log(util.inspect(data));
+            	console.log("tweet sent");
         	}
     	);
 	};
