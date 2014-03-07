@@ -1,0 +1,27 @@
+{
+  "name": "autotweet",
+  "version": "1.0.0",
+  "description": "A simple script for automatically generating tweets for twitter",
+  "main": "autotweet.js",
+  "dependencies": {
+    "twitter": "~0.2.7"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/WaldoHatesYou/autotweet.git"
+  },
+  "keywords": [
+    "twitter",
+    "markov",
+    "automatic"
+  ],
+  "author": "Javed Nissar",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/WaldoHatesYou/autotweet/issues"
+  }
+}
