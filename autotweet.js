@@ -13,8 +13,8 @@ function getRandomInt(min, max) {
 function MarkovChainGenerator(corpus){
 	//create some variables to hold the data we need
 	this.transitionMatrix={};
-	numbers={};
-	collection={}
+	var numbers={};
+	var collection={}
 	//first get the number of times every word occurs after every other word, we need this for the probability calculations
 	for(var x=0;x<corpus.length;x++){
 		//split a sentence from the corpus into tokens
@@ -73,25 +73,34 @@ MarkovChainGenerator.prototype={
 				possibilities[possibility]={"probability":0,"complete":false};
 				possibilities[possibility]["probability"]=Math.round(this.transitionMatrix[token][possibility]*100);
 			}
+			//init array to hold a bunch of states
+			/*the purpose of this array is to essentially be a bag which contains enough of each state that the probability of picking one of those states
+			from the bag is low*/
+			/*ex. with states [1,2] where 1 has a probability of 75% and 2 has a probability of 25%, the for loop will produce [1 repeated 75 times] 
+			concatenated with [2 repeated 25 times]*/
 			var array=[];
-			currentToken=0;
 			var keys=Object.keys(possibilities);
 			for(var x=0;x<keys.length;x++){
 				var key=keys[x];
+				//keep adding this key to array until y exceeds the probability stated
 				for(var y=0;y<possibilities[key]["probability"];y++){
 					array.push(key);
 				}
 			}
 			return array[getRandomInt(0,array.length)];
 		}else{
+			//if token is not actual token return undefined
 			return undefined;
 		}
 	},
 	//generate entire sentences
 	generateSentence:function(length){
-		sentence=[Object.keys(this.transitionMatrix)[getRandomInt(0,Object.keys(this.transitionMatrix).length)]];
+		//generate an array where the first element is a random word from the transition matrix
+		var sentence=[Object.keys(this.transitionMatrix)[getRandomInt(0,Object.keys(this.transitionMatrix).length)]];
 		for(var i=1;i<length-1;i++){
-			generatedWord=this.generateWord(sentence[i-1]);
+			//generate a word
+			var generatedWord=this.generateWord(sentence[i-1]);
+			//if the word returned is not a word, we've reached the end of the markov chain
 			if(generatedWord===undefined){
 				console.log("reached end of markov chain");
 				return sentence.join(" ");
@@ -108,12 +117,14 @@ function readSettings(err,fd){
 		return console.log(err);
 	}else{
 		var settings=JSON.parse(fd);
+		//authorize ourself with twitter
 		var twit=new twitter({
 			consumer_key:settings.consumer_key,
 			consumer_secret:settings.consumer_secret,
 			access_token_key:settings.access_token_key,
 			access_token_secret:settings.access_token_secret
 		});
+		//set up generator
 		var generator=new MarkovChainGenerator(settings.corpus);
 		twit.verifyCredentials(function(data) {
         	console.log("credentials verified");
