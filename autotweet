@@ -1,15 +1,18 @@
+#! /usr/local/bin/node
+
 var twitter=require('twitter');
 var fs=require('fs');
 var util=require('util');
 
-// Returns a random integer between min and max
-// Using Math.round() will give you a non-uniform distribution!
+/* Returns a random integer between min and max
+Using Math.round() will give you a non-uniform distribution!
+This code is from Mozilla Developer Network*/
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 //MARKOV CHAIN CODE
-//Define the init statement
+//Define the initialization of the generator
 function MarkovChainGenerator(corpus){
 	//create some variables to hold the data we need
 	this.transitionMatrix={};
@@ -62,7 +65,7 @@ function MarkovChainGenerator(corpus){
 }
 //Define two functions required
 MarkovChainGenerator.prototype={
-	//generate words
+	//generate word
 	//token is a word in the transition matrix
 	generateWord:function(token){
 		//prevent undefined from being entered
@@ -76,7 +79,7 @@ MarkovChainGenerator.prototype={
 			//init array to hold a bunch of states
 			/*the purpose of this array is to essentially be a bag which contains enough of each state that the probability of picking one of those states
 			from the bag is low*/
-			/*ex. with states [1,2] where 1 has a probability of 75% and 2 has a probability of 25%, the for loop will produce [1 repeated 75 times] 
+			/*ex. with states [1,2] where 1 has a probability of 75% and 2 has a probability of 25%, the for loop will produce [1 repeated 75 times]
 			concatenated with [2 repeated 25 times]*/
 			var array=[];
 			var keys=Object.keys(possibilities);
@@ -117,15 +120,16 @@ function readSettings(err,fd){
 		return console.log(err);
 	}else{
 		var settings=JSON.parse(fd);
-		//authorize ourself with twitter
+		//authorize using twitter
 		var twit=new twitter({
 			consumer_key:settings.consumer_key,
 			consumer_secret:settings.consumer_secret,
 			access_token_key:settings.access_token_key,
 			access_token_secret:settings.access_token_secret
 		});
-		//set up generator
+		//set up text generator
 		var generator=new MarkovChainGenerator(settings.corpus);
+    //tweet generated sentence
 		twit.verifyCredentials(function(data) {
         	console.log("credentials verified");
     	}).updateStatus(generator.generateSentence(5),
@@ -135,4 +139,11 @@ function readSettings(err,fd){
     	);
 	};
 }
-fs.readFile("./settings.json",'utf8',readSettings);
+//if the user has not input any additional arguments
+if(process.argv.length!=3){
+  var settingsLocation="./settings.json";
+}else{
+  var settingsLocation=process.argv[2];
+}
+
+fs.readFile(settingsLocation,'utf8',readSettings);
