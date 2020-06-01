@@ -1,11 +1,11 @@
-#autotweet.js
+# autotweet.js
 
-##What is it?
+## What is it?
 
 autotweet.js is a simple node.js script that randomly generates some text from a list of sentences (using a [Markov Chain](https://en.wikipedia.org/wiki/Markov_chain)) and
 then posts it as a tweet on twitter.
 
-##How Do I use it?
+## How Do I use it?
 
 Before you try using autotweet.js, you'll need to have a [twitter](https://twitter.com) account and you'll need to have [node.js](http://nodejs.org) installed on your computer. After you have that done and over with, just clone autotweet.js from github.
 ```Batchfile
